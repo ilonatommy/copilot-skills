@@ -1,6 +1,6 @@
 ---
 name: skill-writer
-description: A meta-skill for creating new Agent Skills. Use this skill when you need to create, structure, or write a new skill for GitHub Copilot. Helps with SKILL.md file format, YAML frontmatter, skill directory structure, writing effective instructions, and organizing skill resources.
+description: A meta-skill for creating and editing Agent Skills. Use this skill when you need to create, modify, update, or refactor skills for GitHub Copilot. Helps with SKILL.md file format, YAML frontmatter, skill directory structure, writing effective instructions, organizing skill resources, and ensuring changes are committed and pushed.
 ---
 
 # Skill Writer - Create Agent Skills
