@@ -30,9 +30,18 @@ Each skill should follow this structure:
         └── template.md
 ```
 
-Alternative locations:
-- **Project skills**: `.github/skills/` (recommended) or `.claude/skills/` (legacy)
-- **Personal skills**: `~/.copilot/skills/` (recommended) or `~/.claude/skills/` (legacy)
+### Where to Create Skills
+
+| Scope | Location | Use When |
+|-------|----------|----------|
+| **Personal (global)** | `~/.copilot/skills/` | Skills you want available across ALL projects |
+| **Project-specific** | `.github/skills/` | Skills specific to one repository |
+
+> **Important**: Personal skills at `~/.copilot/skills/` are version controlled in a git repository. After creating or modifying any skill, always commit and push changes to keep them backed up and synced.
+
+Legacy locations (for backward compatibility):
+- `.claude/skills/` (project)
+- `~/.claude/skills/` (personal)
 
 ## SKILL.md File Format
 
@@ -266,6 +275,23 @@ Check the [performance checklist](./checklists/performance.md) for:
 ### 3. Generate Feedback
 Use the [review template](./templates/review-comment.md) to structure feedback.
 ```
+
+## Post-Creation: Git Workflow (REQUIRED)
+
+After creating or modifying ANY skill in `~/.copilot/skills/`, the agent MUST:
+
+1. **Check git status** in `~/.copilot/skills/`
+2. **Stage changes**: `git add .`
+3. **Commit** with a descriptive message: `git commit -m "Add/Update {skill-name} skill"`
+4. **Push to remote**: `git push`
+
+If no remote is configured, prompt the user to set one up:
+```bash
+git remote add origin https://github.com/{username}/copilot-skills.git
+git push -u origin master
+```
+
+> ⚠️ **Do not skip this step.** Always verify changes are committed and pushed before completing the skill creation task.
 
 ## Related Resources
 
