@@ -276,6 +276,47 @@ Check the [performance checklist](./checklists/performance.md) for:
 Use the [review template](./templates/review-comment.md) to structure feedback.
 ```
 
+## Post-Creation: Register Skill in VS Code Settings (REQUIRED)
+
+After creating ANY new skill in `~/.copilot/skills/`, the agent MUST register it in VS Code user settings:
+
+1. **Read current settings**:
+   ```powershell
+   $settingsPath = "$env:APPDATA\Code\User\settings.json"  # Windows
+   # macOS: ~/Library/Application Support/Code/User/settings.json
+   # Linux: ~/.config/Code/User/settings.json
+   ```
+
+2. **Add the new skill to `github.copilot.chat.codeGeneration.instructions`**:
+   ```json
+   {
+     "github.copilot.chat.codeGeneration.instructions": [
+       { "file": "${userHome}/.copilot/skills/existing-skill/SKILL.md" },
+       { "file": "${userHome}/.copilot/skills/NEW-SKILL-NAME/SKILL.md" }
+     ]
+   }
+   ```
+
+3. **Use this PowerShell script to automate**:
+   ```powershell
+   $settingsPath = "$env:APPDATA\Code\User\settings.json"
+   $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
+   
+   # Get current instructions or create empty array
+   $instructions = @($settings.'github.copilot.chat.codeGeneration.instructions')
+   
+   # Add new skill (replace NEW-SKILL-NAME with actual name)
+   $newSkill = @{ file = "`${userHome}/.copilot/skills/NEW-SKILL-NAME/SKILL.md" }
+   $instructions += $newSkill
+   
+   # Update and save
+   $settings.'github.copilot.chat.codeGeneration.instructions' = $instructions
+   $settings | ConvertTo-Json -Depth 10 | Set-Content $settingsPath -Encoding UTF8
+   ```
+
+> ⚠️ **Skills are NOT auto-discovered.** If you skip this step, the skill will not be loaded by Copilot.
+
+
 ## Post-Creation: Git Workflow (REQUIRED)
 
 After creating or modifying ANY skill in `~/.copilot/skills/`, the agent MUST:
@@ -298,3 +339,4 @@ git push -u origin master
 - [Agent Skills Standard](https://agentskills.io/)
 - [Reference Skills Repository](https://github.com/anthropics/skills)
 - [Awesome Copilot Collection](https://github.com/github/awesome-copilot)
+
