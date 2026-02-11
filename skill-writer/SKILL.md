@@ -276,45 +276,18 @@ Check the [performance checklist](./checklists/performance.md) for:
 Use the [review template](./templates/review-comment.md) to structure feedback.
 ```
 
-## Post-Creation: Register Skill in VS Code Settings (REQUIRED)
+## Post-Creation: Verify Skill Discovery
 
-After creating ANY new skill in `~/.copilot/skills/`, the agent MUST register it in VS Code user settings:
+After creating a skill in `~/.copilot/skills/`, VS Code automatically discovers it. To verify:
 
-1. **Read current settings**:
-   ```powershell
-   $settingsPath = "$env:APPDATA\Code\User\settings.json"  # Windows
-   # macOS: ~/Library/Application Support/Code/User/settings.json
-   # Linux: ~/.config/Code/User/settings.json
-   ```
+1. **Check skill is recognized**: Right-click in the Chat view and select **Diagnostics** to see all loaded skills
+2. **Test activation**: Ask Copilot something that matches your skill's description
+3. **Troubleshoot**: If the skill isn't loading:
+   - Verify the SKILL.md has valid YAML frontmatter
+   - Check that `name` and `description` fields are present
+   - Ensure the description clearly describes when to use the skill
 
-2. **Add the new skill to `github.copilot.chat.codeGeneration.instructions`**:
-   ```json
-   {
-     "github.copilot.chat.codeGeneration.instructions": [
-       { "file": "${userHome}/.copilot/skills/existing-skill/SKILL.md" },
-       { "file": "${userHome}/.copilot/skills/NEW-SKILL-NAME/SKILL.md" }
-     ]
-   }
-   ```
-
-3. **Use this PowerShell script to automate**:
-   ```powershell
-   $settingsPath = "$env:APPDATA\Code\User\settings.json"
-   $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
-   
-   # Get current instructions or create empty array
-   $instructions = @($settings.'github.copilot.chat.codeGeneration.instructions')
-   
-   # Add new skill (replace NEW-SKILL-NAME with actual name)
-   $newSkill = @{ file = "`${userHome}/.copilot/skills/NEW-SKILL-NAME/SKILL.md" }
-   $instructions += $newSkill
-   
-   # Update and save
-   $settings.'github.copilot.chat.codeGeneration.instructions' = $instructions
-   $settings | ConvertTo-Json -Depth 10 | Set-Content $settingsPath -Encoding UTF8
-   ```
-
-> ⚠️ **Skills are NOT auto-discovered.** If you skip this step, the skill will not be loaded by Copilot.
+> **Note**: You can add additional skill locations using the `chat.agentSkillsLocations` setting if you want skills stored elsewhere.
 
 
 ## Post-Creation: Git Workflow (REQUIRED)
