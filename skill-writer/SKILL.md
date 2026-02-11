@@ -14,6 +14,26 @@ This skill helps you create well-structured Agent Skills for GitHub Copilot, VS 
 - Improving or refactoring an existing skill
 - Understanding the Agent Skills standard
 
+## Security Requirements (CRITICAL)
+
+> ⚠️ **NEVER include secrets, tokens, API keys, passwords, or any sensitive credentials in skills.**
+
+Skills are stored in git repositories and may be shared publicly. Treat all skill content as public information.
+
+**Prohibited content:**
+- API keys or tokens (GitHub, Azure, AWS, etc.)
+- Passwords or credentials
+- Connection strings with embedded secrets
+- Private URLs with authentication tokens
+- Personal access tokens (PATs)
+- Service account credentials
+
+**Safe alternatives:**
+- Reference environment variables: `Use $GITHUB_TOKEN from your environment`
+- Use placeholder syntax: `<YOUR_API_KEY>` or `${API_KEY}`
+- Document where to securely store credentials (e.g., `.env` files, secret managers)
+- Use MCP servers for secure API integrations
+
 ## Skill Directory Structure
 
 Each skill should follow this structure:
@@ -223,7 +243,7 @@ Before publishing your skill, verify:
 - [ ] Examples demonstrate expected input/output
 - [ ] All referenced files exist in the skill directory
 - [ ] Relative paths are correct
-- [ ] No sensitive information (API keys, passwords)
+- [ ] **SECURITY: No secrets, tokens, API keys, passwords, or credentials** (use environment variable references or placeholders instead)
 - [ ] Tested with actual prompts that should trigger it
 
 ## Example: Creating a Code Review Skill
