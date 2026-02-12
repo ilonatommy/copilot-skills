@@ -4,11 +4,22 @@ Personal [GitHub Copilot Agent Skills](https://agentskills.io/) collection for u
 
 ## Installation
 
-Clone this repository to your Copilot skills directory:
+1. Clone this repository to your Copilot skills directory:
 
-```bash
-git clone https://github.com/ilonatommy/copilot-skills.git ~/.copilot/skills
-```
+   ```bash
+   git clone https://github.com/ilonatommy/copilot-skills.git ~/.copilot/skills
+   ```
+
+2. Add this to your VS Code `settings.json` to enable runtime skills:
+
+   ```json
+   "chat.agentSkillsLocations": [
+     "~/.copilot/skills",
+     "~/.copilot/skills/runtime-skills"
+   ]
+   ```
+
+   This enables VS Code to discover both personal skills and the synced runtime skills.
 
 ## Available Skills
 

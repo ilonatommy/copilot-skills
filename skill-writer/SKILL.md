@@ -308,6 +308,14 @@ After creating a skill in `~/.copilot/skills/`, VS Code automatically discovers 
    - Ensure the description clearly describes when to use the skill
 
 > **Note**: You can add additional skill locations using the `chat.agentSkillsLocations` setting if you want skills stored elsewhere.
+>
+> For example, to include both personal skills and runtime skills from dotnet/runtime:
+> ```json
+> "chat.agentSkillsLocations": [
+>   "~/.copilot/skills",
+>   "~/.copilot/skills/runtime-skills"
+> ]
+> ```
 
 
 ## Post-Creation: Git Workflow (REQUIRED)
