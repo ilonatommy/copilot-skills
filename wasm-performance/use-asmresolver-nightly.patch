@@ -1,0 +1,37 @@
+diff --git a/NuGet.Config b/NuGet.Config
+index c27c48f9..f04552e2 100644
+--- a/NuGet.Config
++++ b/NuGet.Config
+@@ -20,5 +20,6 @@
+ 	<add key="dotnet-tools" value="https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json" />
+ 
+     <add key="benchmarkdotnet.weaver" value="src/BenchmarkDotNet.Weaver/packages" />
++    <add key="asmresolver-nightly" value="https://nuget.washi.dev/v3/index.json" />
+   </packageSources>
+ </configuration>
+diff --git a/build/common.props b/build/common.props
+index 6fe9ca8e..928642e9 100644
+--- a/build/common.props
++++ b/build/common.props
+@@ -60,7 +60,7 @@
+ 
+   <PropertyGroup>
+     <!-- Increment this when the BenchmarkDotNet.Weaver package needs to be re-packed. -->
+-    <WeaverVersionSuffix>-1</WeaverVersionSuffix>
++    <WeaverVersionSuffix>-2</WeaverVersionSuffix>
+   </PropertyGroup>
+ 
+   <ItemGroup>
+diff --git a/src/BenchmarkDotNet.Weaver/BenchmarkDotNet.Weaver.csproj b/src/BenchmarkDotNet.Weaver/BenchmarkDotNet.Weaver.csproj
+index 0bcc2c5c..ac9fb884 100644
+--- a/src/BenchmarkDotNet.Weaver/BenchmarkDotNet.Weaver.csproj
++++ b/src/BenchmarkDotNet.Weaver/BenchmarkDotNet.Weaver.csproj
+@@ -20,7 +20,7 @@ then run `build.cmd pack-weaver`.
+   </PropertyGroup>
+ 
+   <ItemGroup>
+-    <PackageReference Include="AsmResolver.DotNet" Version="6.0.0-beta.5" PrivateAssets="all" />
++    <PackageReference Include="AsmResolver.DotNet" Version="6.0.0-development.358" PrivateAssets="all" />
+     <PackageReference Include="Microsoft.Build.Framework" Version="18.0.2" PrivateAssets="all" />
+     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="18.0.2" PrivateAssets="all" />
+   </ItemGroup>

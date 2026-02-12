@@ -131,6 +131,12 @@ cd $BDN_REPO
 
 AsmResolver has hardcoded version switches. The nightly feed has fixes for newer versions.
 
+> **Quick Option for net11 support:** A ready-to-use patch file is available in this skill directory: `use-asmresolver-nightly.patch`. Apply it from the BDN repo root with:
+> ```bash
+> git apply /path/to/use-asmresolver-nightly.patch
+> ```
+> This patch performs all three steps below automatically (adds nightly feed, updates AsmResolver version, and increments WeaverVersionSuffix).
+
 1. **Add nightly feed** — ensure `NuGet.Config` in `$BDN_REPO` has:
    ```xml
    <add key="asmresolver-nightly" value="https://nuget.washi.dev/v3/index.json" />
