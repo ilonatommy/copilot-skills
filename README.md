@@ -29,8 +29,8 @@ Personal [GitHub Copilot Agent Skills](https://agentskills.io/) collection for u
 |-------|-------------|
 | `code-review` | Performs comprehensive code reviews for GitHub pull requests |
 | `commit-squashing` | Squashes multiple git commits into a single clean commit |
+| `runtime-performance` | Set up and run .NET micro-benchmarks locally (CoreCLR and WASM) |
 | `skill-writer` | Meta-skill for creating and managing Agent Skills |
-| `wasm-performance` | Set up and run .NET WASM micro-benchmarks locally |
 
 ### Runtime Skills (from dotnet/runtime)
 
