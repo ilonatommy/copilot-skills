@@ -27,8 +27,8 @@ jobs:
       - name: Check for changes
         id: check-changes
         run: |
-          # Compare current skills with upstream
-          if diff -rq runtime-skills /tmp/runtime/.github/skills > /dev/null 2>&1; then
+          # Compare current skills with upstream (exclude README.md which is generated locally)
+          if diff -rq --exclude='README.md' runtime-skills /tmp/runtime/.github/skills > /dev/null 2>&1; then
             echo "No changes detected"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
