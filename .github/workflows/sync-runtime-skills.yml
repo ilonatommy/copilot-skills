@@ -1,0 +1,80 @@
+name: Sync Runtime Skills
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    # Allow manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-runtime-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout copilot-skills
+        uses: actions/checkout@v4
+
+      - name: Clone runtime with sparse checkout
+        run: |
+          git clone --filter=blob:none --sparse https://github.com/dotnet/runtime.git /tmp/runtime
+          cd /tmp/runtime
+          git sparse-checkout set .github/skills
+
+      - name: Check for changes
+        id: check-changes
+        run: |
+          # Compare current skills with upstream (exclude README.md which is generated locally)
+          if diff -rq --exclude='README.md' runtime-skills /tmp/runtime/.github/skills > /dev/null 2>&1; then
+            echo "No changes detected"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected in runtime skills"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update runtime-skills
+        if: steps.check-changes.outputs.has_changes == 'true'
+        run: |
+          rm -rf runtime-skills
+          cp -r /tmp/runtime/.github/skills runtime-skills
+          
+          # Get the latest commit info from runtime
+          cd /tmp/runtime
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          COMMIT_DATE=$(git log -1 --format=%ci)
+          cd -
+          
+          # Update the source file with commit info
+          echo "# Runtime Skills" > runtime-skills/README.md
+          echo "" >> runtime-skills/README.md
+          echo "These skills are synced from [dotnet/runtime](https://github.com/dotnet/runtime/tree/main/.github/skills)." >> runtime-skills/README.md
+          echo "" >> runtime-skills/README.md
+          echo "**Last synced:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> runtime-skills/README.md
+          echo "**Source commit:** [\`$COMMIT_SHA\`](https://github.com/dotnet/runtime/commit/$COMMIT_SHA)" >> runtime-skills/README.md
+          echo "" >> runtime-skills/README.md
+          echo "> ⚠️ Do not edit these files directly. Changes will be overwritten on next sync." >> runtime-skills/README.md
+
+      - name: Create Pull Request
+        if: steps.check-changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update runtime skills from dotnet/runtime"
+          title: "🔄 Update runtime skills from upstream"
+          body: |
+            This PR updates the runtime skills from [dotnet/runtime](https://github.com/dotnet/runtime/tree/main/.github/skills).
+
+            **Changes detected in:**
+            - Skills synced from upstream dotnet/runtime repository
+
+            ---
+            *This PR was automatically created by the sync-runtime-skills workflow.*
+          branch: update-runtime-skills
+          delete-branch: true
+          labels: |
+            automated
+            runtime-skills
