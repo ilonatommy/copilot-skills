@@ -1,26 +1,43 @@
 ---
 name: jit-regression-test
-description: Extract a standalone JIT regression test case from a given GitHub issue and save it under the JitBlue folder. Use this when asked to create or extract a JIT regression test from an issue.
+description: >
+  Extract a standalone JIT regression test case from a given GitHub issue and
+  save it under a JIT regression runner folder. USE FOR: creating JIT regression tests,
+  extracting repro code from dotnet/runtime issues, "write a test for this JIT
+  bug", "create a regression test for issue #NNNNN", converting issue repro to
+  xunit test. DO NOT USE FOR: non-JIT tests (use standard test patterns),
+  debugging JIT issues without a known repro, performance benchmarks (use
+  performance-benchmark skill).
 ---
 
 # JIT Regression Test Extraction
 
-When you need to extract a JIT regression test case from a GitHub issue, follow this process to create a properly structured test under `src/tests/JIT/Regression/JitBlue/`.
+> 🚨 **Do NOT create a test when**: the issue has no reproducible code and you cannot compose a minimal repro, the issue is a duplicate of an existing JIT regression test, or the bug is in libraries/runtime rather than the JIT compiler itself.
+
+Extract a JIT regression test case from a GitHub issue into a properly structured test under `src/tests/JIT/Regression_*/`.
 
 ## Step 1: Gather Information from the GitHub Issue
 
 From the GitHub issue, extract:
-1. **Issue number** - Used to name the test folder and files (e.g., issue #99391 → `Runtime_99391`)
-2. **Reproduction code** - The C# code that demonstrates the bug. If no code provided, try to compose it yourself.
-3. **Environment variables** - Any DOTNET_* environment variables required to reproduce the bug
-4. **Expected behavior** - What the correct output/behavior should be
+1. **Issue number** → folder/file name (e.g., #99391 → `Runtime_99391`)
+2. **Reproduction code** — if none provided, compose a minimal repro yourself
+3. **Environment variables** — any `DOTNET_*` vars needed to reproduce
+4. **Expected behavior** — correct output/behavior
 
-## Step 2: Create the Test Directory
+## Step 2: Choose the Test Location
 
-Create a new folder under `src/tests/JIT/Regression/JitBlue/`:
+For a simple test using optimized compilation without debug information, add the source file directly to:
 
 ```
-src/tests/JIT/Regression/JitBlue/Runtime_<issue_number>/
+src/tests/JIT/Regression_ro_2/Runtime_<issue_number>.cs
+```
+
+`Regression_ro_2/Regression_ro_2.csproj` recursively includes sources in its directory. Do not edit its source list or create a project for the test. Use a `Runtime_<issue_number>/` subdirectory only when keeping multiple related files together.
+
+If the test needs its own project (see Step 4), use a separate directory outside the globbed source directories:
+
+```
+src/tests/JIT/Regression_2/Runtime_<issue_number>/
 ```
 
 ## Step 3: Create the Test File
@@ -52,8 +69,9 @@ public class Runtime_<issue_number>
 
 - **License header**: Always include the standard .NET Foundation license header
 - **Class name**: Match the file name exactly (`Runtime_<issue_number>`)
-- **Test method**: Use `[Fact]` attribute and name the method `TestEntryPoint()` or `Test()`
-- **Assertions**: Use Xunit's helpers or just throw plain exceptions.
+- **Test method**: `[Fact]` attribute, named `TestEntryPoint()`
+- **Minimize the reproduction**: Strip to the minimal case that triggers the bug
+- **Use `[MethodImpl(MethodImplOptions.NoInlining)]`** when preventing inlining is needed to reproduce
 
 ### Example: Simple Test (from Runtime_99391)
 
@@ -86,13 +104,16 @@ public class Runtime_99391
 }
 ```
 
-## [Optional] Step 4: Create a .csproj File (Only When Needed)
+## Step 4: Create a .csproj File Only When Required
 
 A custom `.csproj` file is **only required** when:
 - Environment variables are needed to reproduce the bug (such as `DOTNET_JitStressModeNames`)
 - Special compilation settings are required
+- Separate assemblies, native dependencies, or process isolation are required
 
-It should be located next to the test source file with the following name: `Runtime_<issue_number>.csproj`. Example:
+Otherwise, the source glob in `Regression_ro_2.csproj` includes the test automatically. Keep custom projects and their sources under `src/tests/JIT/Regression_2/Runtime_<issue_number>/`. `Regression_2/Regression_2.csproj` discovers those projects recursively without compiling their sources directly. Do not place them in source-glob directories such as `src/tests/JIT/Regression_ro_2/`, where they would also be compiled with the runner's settings.
+
+If a custom .csproj file is needed, it should be located next to the test source file with the following name: `Runtime_<issue_number>.csproj`. Example:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -110,9 +131,7 @@ It should be located next to the test source file with the following name: `Runt
 </Project>
 ```
 
-## Important Notes
+## Tips
 
-- **No .csproj needed for simple tests**: Most tests only need the `.cs` file. The test infrastructure uses default settings that work for most cases.
-- **Look at recent tests**: When in doubt, examine recent tests under `src/tests/JIT/Regression/JitBlue/Runtime_*` for the latest conventions.
-- **Use `[MethodImpl(MethodImplOptions.NoInlining)]`**: When you need to prevent inlining to reproduce a JIT bug.
-- **Minimize the reproduction**: Strip down the test code to the minimal case that reproduces the issue.
+- **No .csproj edits needed for simple tests** — add the `.cs` file under `src/tests/JIT/Regression_ro_2/`.
+- **Look at recent tests** under `src/tests/JIT/Regression_ro_2/` for simple tests, or `src/tests/JIT/Regression_2/Runtime_*` for tests with custom projects.
