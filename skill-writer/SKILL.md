@@ -320,10 +320,20 @@ After creating a skill in `~/.copilot/skills/`, VS Code automatically discovers 
 
 ## Post-Creation: Git Workflow (REQUIRED)
 
+Before syncing, run the [scoped skill validator](./scripts/README.md) on explicit
+edited skill roots (or `--changed` only when all current changes belong to the
+task). Use `--discover` when the Copilot CLI is available; verify exact enabled
+paths, not names alone. Resolve failures or report the blocker without claiming
+successful discovery. Do not include unrelated malformed skills in scoped
+validation or silently select a shadowing copy. Review new helper resources and
+run their targeted tests as well. The helper never stages, commits or pushes.
+
 After creating or modifying ANY skill in `~/.copilot/skills/`, the agent MUST:
 
 1. **Check git status** in `~/.copilot/skills/`
-2. **Stage changes**: `git add .`
+2. **Stage only task-owned paths**: `git add -- <explicit-file> ...`.
+   Preserve all pre-existing/unrelated modifications; never use `git add .`
+   in a dirty/shared personal-skills repository. Inspect the staged diff.
 3. **Commit** with a descriptive message: `git commit -m "Add/Update {skill-name} skill"`
 4. **Push to remote**: `git push`
 
@@ -333,7 +343,9 @@ git remote add origin https://github.com/{username}/copilot-skills.git
 git push -u origin master
 ```
 
-> ⚠️ **Do not skip this step.** Always verify changes are committed and pushed before completing the skill creation task.
+> ⚠️ Verify changes are committed and pushed before claiming they are synced.
+> If the user explicitly requests implementation/testing without committing or
+> pushing, honor that boundary and report exact changed paths for later sync.
 
 ## Related Resources
 

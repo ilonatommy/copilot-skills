@@ -26,7 +26,18 @@ The user will typically provide:
 
 ### Step 1: Gather Information
 
-Use GitHub MCP tools to fetch all relevant data:
+For a GitHub PR, first run the read-only
+[PR snapshot helper](./scripts/README.md), using an explicit `owner/repo`, PR
+number and session artifact directory outside a Git checkout. Use its completed
+manifest and raw artifacts as frozen evidence. On re-review, pass the explicit
+previous same-PR manifest and relevant source/test/contract/instruction paths.
+Distinguish the full three-dot PR diff from the two-endpoint update delta;
+revalidate stale evidence rather than describing the full diff as newly added.
+If capture fails or head/base drifts, report the error and retry before claiming
+complete/current evidence. Re-run before final synthesis. This helper does not
+execute code, post reviews or prove runtime behavior.
+
+Use `gh` read-only commands (or GitHub MCP tools when needed) for supplemental data:
 
 ```
 1. Parse the PR URL to extract: owner, repo, pull_number
