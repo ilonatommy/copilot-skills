@@ -1,6 +1,6 @@
 ---
 name: personal-review-preferences
-description: Applies my personal, repository-aware review preferences alongside an appropriate review skill. Use when reviewing PRs, local diffs, tests, skills, or evals, proposing review comments, or re-reviewing updated changes. This is a preference layer, not a standalone review procedure.
+description: Applies my personal, repository-aware review and investigation preferences alongside an appropriate specialist skill. Use when reviewing PRs, local diffs, tests, skills, or evals, proposing review comments, re-reviewing changes, or investigating regressions and CI failures. This is a preference layer, not a standalone procedure.
 ---
 
 # Personal review preferences
@@ -13,7 +13,7 @@ An initial, deliberately small review contract. Apply the shared preferences and
 - Use the review skill appropriate to the repository and requested scope; keep its evidence-gathering and validation procedure. This skill adds preferences, not another review pass.
 - Do not invoke every available review skill, add reviewers, or start a multi-agent workflow just because this layer is loaded.
 - Follow applicable repository instructions and my current request. If a preference conflicts with them, explain the conflict rather than silently overriding them.
-- Review and explain first. Do not treat a review request or a follow-up question as permission to edit, execute PR code, run tests, post comments, resolve threads, approve, commit, or push. Follow any separately authorized execution scope.
+- Distinguish review, investigation, and fixing. A source-only review stays source-only; an investigation may need execution as described below. A follow-up question does not itself expand the task into implementing a fix. Do not post comments, resolve threads, approve, commit, or push without authorization.
 
 ## Shared review contract
 
@@ -25,6 +25,13 @@ An initial, deliberately small review contract. Apply the shared preferences and
 - When proposing a fix, show a minimal unified diff and where it belongs. Prefer one authoritative rule or shared fix over duplicated instructions, extra abstractions, or scenario-specific workarounds. Minimal must still fully address the issue.
 - Keep generated outputs separate from their source of truth. Explain whether a correction belongs in the generator skill, shared infrastructure, or generated code before proposing edits.
 - When I ask for a review comment, provide a concise proposed comment and its exact placement. Do not publish it without authorization.
+
+## Investigation preferences
+
+- Gather evidence before settling on a cause or implementing a fix. An investigation can include building and running a repro app, targeted tests, and small experimental changes needed to test a hypothesis, within applicable permissions and repository rules. Do not require separate approval for every routine investigative step, but respect explicit source-only or no-execution requests.
+- Keep experiments isolated and distinguish them from a proposed production fix. Preserve user changes, record what an experiment changed, and remove only your own temporary changes when finished unless I ask to keep the repro.
+- For "why did this start failing?", compare the last passing and first failing evidence: relevant code/configuration changes, SDK and package versions, build identity, feeds, and actual restore sources where available. Do not infer a package's source merely from the configured feed list.
+- Separate confirmed facts, hypotheses, and missing evidence. State what each experiment establishes and what would disprove the leading explanation; report uncertainty rather than substituting a plausible story for a demonstrated cause.
 
 ## Repository-specific notes
 
@@ -47,6 +54,6 @@ Use the shared contract and the repository's own review guidance. Do not carry s
 
 ## Example
 
-Request: "Review this scenario-tests PR using my personal review preferences and the appropriate review skill. Proposals only."
+Request: "Review this scenario-tests PR using my personal review preferences and the appropriate review skill. Source-only; proposals only."
 
 Expected response: supported findings with exact locations, plain-English failure sequences, and concise comment proposals; identify whether any suggested fix belongs in the skill or harness. No edits, test execution, or GitHub publication.
